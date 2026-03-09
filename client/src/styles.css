@@ -31,7 +31,8 @@ body {
 .dashboard-layout {
   display: grid;
   grid-template-columns: var(--sidebar-width) 1fr;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   transition: grid-template-columns 0.25s ease;
 }
 
@@ -210,6 +211,8 @@ body {
   padding: 20px 24px;
   min-height: 0;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ──────────────────────────────────────────────────
@@ -238,6 +241,7 @@ body {
   flex-direction: column;
   min-height: 0;
   border-right: 1px solid #e5e7f0;
+  border-bottom: 1px solid #e5e7f0;
   overflow: hidden;
   position: relative;
 }
@@ -288,7 +292,7 @@ body {
 
 .conversations-message-list-wrapper {
   flex: 1 1 0%;
-  min-height: 0;
+  min-height: 400px;
   overflow: hidden;
   position: relative;
   display: flex;
@@ -1029,6 +1033,10 @@ body {
     border-bottom: 1px solid #e5e7f0;
     z-index: 10;
     flex-shrink: 0;
+  }
+
+  .dashboard-main {
+    padding: 16px;
   }
 
   .dashboard-sidebar {
