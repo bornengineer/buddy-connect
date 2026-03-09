@@ -3,9 +3,14 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
   color: #0f172a;
-  background: radial-gradient(circle at top left, #bae6fd 0%, #f8fafc 55%, #d1fae5 100%);
+  background: radial-gradient(
+    circle at top left,
+    #bae6fd 0%,
+    #f8fafc 55%,
+    #d1fae5 100%
+  );
 }
 
 body {
@@ -15,4 +20,100 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+/* ──────────────────────────────────────────────────
+   Conversations Panel Layout
+   ────────────────────────────────────────────────── */
+
+.conversations-panel-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  height: 72vh;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+@media (min-width: 1024px) {
+  .conversations-panel-grid {
+    grid-template-columns: 320px minmax(0, 1fr);
+  }
+}
+
+.conversations-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.conversations-list-wrapper {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 0.75rem 0.75rem;
+}
+
+.conversations-chat-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.conversations-message-list-wrapper {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ──────────────────────────────────────────────────
+   CometChat message-list overrides
+   The component sets flex-shrink: 0 internally which
+   prevents it from fitting inside a height-constrained
+   flex parent.  We also need to guarantee that the
+   wrapper-div the React component injects has the
+   same constraints.
+   ────────────────────────────────────────────────── */
+
+.conversations-message-list-wrapper .cometchat-message-list {
+  flex-shrink: 1 !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.conversations-message-list-wrapper .cometchat-message-list__body {
+  overflow-y: auto !important;
+  min-height: 0 !important;
+}
+
+/* The React component wraps itself in a generic div — make
+   sure that div participates in the flex layout correctly. */
+.conversations-message-list-wrapper > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  flex: 1 1 0%;
+}
+
+/* Also fix the conversations sidebar CometChat list */
+.conversations-list-wrapper .cometchat {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+.conversations-list-wrapper > div {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
