@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { CometChatUIKit } from "@cometchat/chat-uikit-react";
-import { Users, UserPlus, MessageCircle, LogOut } from "lucide-react";
+import {
+  Users,
+  UserPlus,
+  MessageCircle,
+  LogOut,
+  PanelLeftClose,
+  PanelLeft,
+} from "lucide-react";
 import { FriendRequestsPanel } from "../components/FriendRequestsPanel";
 import { UsersPanel } from "../components/UsersPanel";
 import { ConversationsPanel } from "../components/ConversationsPanel";
@@ -18,6 +25,7 @@ export function DashboardPage() {
   const { auth, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("conversations");
   const [refreshKey, setRefreshKey] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const onLogout = async () => {
     await CometChatUIKit.logout();
@@ -25,11 +33,28 @@ export function DashboardPage() {
   };
 
   return (
-    <div className="dashboard-layout">
+    <div
+      className={`dashboard-layout ${sidebarOpen ? "" : "dashboard-layout--collapsed"}`}
+    >
       {/* ─── Sidebar ─── */}
-      <aside className="dashboard-sidebar">
-        <div className="sidebar-brand">
-          <span className="sidebar-brand-text">BUDDYCONNECT</span>
+      <aside
+        className={`dashboard-sidebar ${sidebarOpen ? "" : "dashboard-sidebar--collapsed"}`}
+      >
+        <div className="sidebar-top-row">
+          {sidebarOpen && (
+            <span className="sidebar-brand-text">BUDDYCONNECT</span>
+          )}
+          <button
+            className="sidebar-toggle-btn"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            {sidebarOpen ? (
+              <PanelLeftClose size={18} />
+            ) : (
+              <PanelLeft size={18} />
+            )}
+          </button>
         </div>
 
         <nav className="sidebar-nav">
@@ -38,9 +63,10 @@ export function DashboardPage() {
               key={key}
               onClick={() => setActiveTab(key)}
               className={`sidebar-nav-item ${activeTab === key ? "sidebar-nav-item--active" : ""}`}
+              title={sidebarOpen ? undefined : label}
             >
               <Icon size={18} strokeWidth={2} />
-              <span>{label}</span>
+              {sidebarOpen && <span>{label}</span>}
             </button>
           ))}
         </nav>
@@ -49,7 +75,9 @@ export function DashboardPage() {
           <div className="sidebar-user-avatar">
             {auth?.user.name?.charAt(0)?.toUpperCase() || "?"}
           </div>
-          <span className="sidebar-user-name">{auth?.user.name}</span>
+          {sidebarOpen && (
+            <span className="sidebar-user-name">{auth?.user.name}</span>
+          )}
           <button
             className="sidebar-logout-btn"
             onClick={onLogout}

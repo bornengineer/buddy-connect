@@ -95,9 +95,12 @@ export function ConversationsPanel() {
 
   if (!ready) {
     return (
-      <div className="cometchat-loading">
-        <div className="cometchat-loading-spinner" />
-        <p>Connecting to CometChat...</p>
+      <div className="modern-loader">
+        <div className="modern-loader-spinner" />
+        <p className="modern-loader-text">Connecting to CometChat…</p>
+        <p className="modern-loader-subtext">
+          Setting up your secure messaging
+        </p>
       </div>
     );
   }
@@ -122,10 +125,10 @@ export function ConversationsPanel() {
 
   return (
     <div className="conversations-panel-grid">
+      {/* Left: CometChat conversations list + our New Chat button overlay */}
       <aside className="conversations-sidebar">
-        {/* Header: "Chats" + New Chat button */}
-        <div className="conversations-header">
-          <h3 className="conversations-header-title">Chats</h3>
+        {/* New Chat button floated over the CometChat header */}
+        <div className="conversations-new-chat-float">
           <Dialog.Root
             open={newChatOpen}
             onOpenChange={(open) => {
@@ -154,7 +157,10 @@ export function ConversationsPanel() {
 
                 <div className="dialog-body">
                   {friendsLoading ? (
-                    <p className="dialog-empty">Loading friends...</p>
+                    <div className="modern-loader modern-loader--inline">
+                      <div className="modern-loader-spinner" />
+                      <p className="modern-loader-text">Loading friends…</p>
+                    </div>
                   ) : friends.length === 0 ? (
                     <p className="dialog-empty">
                       No friends yet. Add friends first!
@@ -183,7 +189,7 @@ export function ConversationsPanel() {
           </Dialog.Root>
         </div>
 
-        {/* Conversations list */}
+        {/* Full CometChat conversations component (has its own "Chats" header) */}
         <div className="conversations-list-wrapper">
           <CometChatConversations
             conversationsRequestBuilder={conversationsRequestBuilder}
@@ -194,6 +200,7 @@ export function ConversationsPanel() {
         </div>
       </aside>
 
+      {/* Right: Chat area */}
       <section className="conversations-chat-section">
         {target ? (
           <>
