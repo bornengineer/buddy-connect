@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   CometChatUIKit,
   UIKitSettingsBuilder,
@@ -17,15 +17,19 @@ export function useCometChat() {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const running = useRef(false);
 
   const init = useCallback(async () => {
-    if (!auth) {
-      setReady(false);
+    if (!auth || running.current) {
+      if (!auth) setReady(false);
       return;
     }
 
+    running.current = true;
+
     try {
       setError(null);
+      setReady(false);
 
       if (!initialized) {
         const settings = new UIKitSettingsBuilder()
@@ -51,7 +55,11 @@ export function useCometChat() {
       setReady(true);
     } catch (err) {
       console.error(err);
+      // If init failed, reset the flag so retry can re-init
+      initialized = false;
       setError("Failed to initialize CometChat");
+    } finally {
+      running.current = false;
     }
   }, [auth]);
 

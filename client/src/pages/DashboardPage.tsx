@@ -26,17 +26,40 @@ export function DashboardPage() {
   const [activeTab, setActiveTab] = useState<Tab>("conversations");
   const [refreshKey, setRefreshKey] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [messageTargetUid, setMessageTargetUid] = useState<string | null>(null);
 
   const onLogout = async () => {
     await CometChatUIKit.logout();
     logout();
   };
 
+  const handleMessageUser = (uid: string) => {
+    setMessageTargetUid(uid);
+    setActiveTab("conversations");
+  };
+
   return (
     <div
       className={`dashboard-layout ${sidebarOpen ? "" : "dashboard-layout--collapsed"}`}
     >
+      {/* ─── Mobile header ─── */}
+      <header className="mobile-header">
+        <button
+          className="sidebar-toggle-btn"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          {sidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeft size={18} />}
+        </button>
+        <span className="sidebar-brand-text">BUDDYCONNECT</span>
+      </header>
+
       {/* ─── Sidebar ─── */}
+      {sidebarOpen && (
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       <aside
         className={`dashboard-sidebar ${sidebarOpen ? "" : "dashboard-sidebar--collapsed"}`}
       >
@@ -61,7 +84,11 @@ export function DashboardPage() {
           {NAV_ITEMS.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
-              onClick={() => setActiveTab(key)}
+              onClick={() => {
+                setActiveTab(key);
+                // Close sidebar on mobile after selecting
+                if (window.innerWidth < 768) setSidebarOpen(false);
+              }}
               className={`sidebar-nav-item ${activeTab === key ? "sidebar-nav-item--active" : ""}`}
               title={sidebarOpen ? undefined : label}
             >
@@ -90,7 +117,12 @@ export function DashboardPage() {
 
       {/* ─── Main content ─── */}
       <main className="dashboard-main">
-        {activeTab === "users" && <UsersPanel refreshKey={refreshKey} />}
+        {activeTab === "users" && (
+          <UsersPanel
+            refreshKey={refreshKey}
+            onMessageUser={handleMessageUser}
+          />
+        )}
         {activeTab === "friend-requests" && (
           <FriendRequestsPanel
             onChanged={() => {
@@ -98,7 +130,12 @@ export function DashboardPage() {
             }}
           />
         )}
-        {activeTab === "conversations" && <ConversationsPanel />}
+        {activeTab === "conversations" && (
+          <ConversationsPanel
+            initialChatUid={messageTargetUid}
+            onChatOpened={() => setMessageTargetUid(null)}
+          />
+        )}
       </main>
     </div>
   );

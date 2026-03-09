@@ -23,7 +23,12 @@ type Friend = {
   email: string;
 };
 
-export function ConversationsPanel() {
+type Props = {
+  initialChatUid?: string | null;
+  onChatOpened?: () => void;
+};
+
+export function ConversationsPanel({ initialChatUid, onChatOpened }: Props) {
   const { ready, error, retry } = useCometChat();
   const [target, setTarget] = useState<MessageTarget | null>(null);
   const [panelError, setPanelError] = useState<string | null>(null);
@@ -55,6 +60,14 @@ export function ConversationsPanel() {
 
     void loadFriendUids();
   }, []);
+
+  // Handle initialChatUid from DashboardPage (Message button on user card)
+  useEffect(() => {
+    if (initialChatUid && ready) {
+      startChatWithFriend(initialChatUid);
+      onChatOpened?.();
+    }
+  }, [initialChatUid, ready]);
 
   const fetchFriends = async () => {
     setFriendsLoading(true);

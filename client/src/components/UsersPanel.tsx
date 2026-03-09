@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { Users, Search, MessageCircle, UserPlus } from "lucide-react";
-import * as Avatar from "@radix-ui/react-avatar";
-import { http } from "../api/http";
-import type { User } from "../types/api";
+import { useEffect, useState } from 'react';
+import { Users, Search, MessageCircle, UserPlus } from 'lucide-react';
+import * as Avatar from '@radix-ui/react-avatar';
+import { http } from '../api/http';
+import type { User } from '../types/api';
 
 type Props = {
   refreshKey: number;
+  onMessageUser: (uid: string) => void;
 };
 
 function SkeletonCard() {
@@ -23,14 +24,14 @@ function SkeletonCard() {
   );
 }
 
-export function UsersPanel({ refreshKey }: Props) {
+export function UsersPanel({ refreshKey, onMessageUser }: Props) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const load = async () => {
     setLoading(true);
-    const response = await http.get<User[]>("/users");
+    const response = await http.get<User[]>('/users');
     setUsers(response.data);
     setLoading(false);
   };
@@ -40,12 +41,12 @@ export function UsersPanel({ refreshKey }: Props) {
   }, [refreshKey]);
 
   const sendRequest = async (userId: number) => {
-    await http.post("/friend-requests", { receiverId: userId });
+    await http.post('/friend-requests', { receiverId: userId });
     await load();
   };
 
   const filtered = users.filter((u) =>
-    u.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    u.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -57,9 +58,7 @@ export function UsersPanel({ refreshKey }: Props) {
         </div>
         <div>
           <h2 className="panel-page-title">Discover Users</h2>
-          <p className="panel-page-subtitle">
-            Find and connect with people on the platform.
-          </p>
+          <p className="panel-page-subtitle">Find and connect with people on the platform.</p>
         </div>
       </div>
 
@@ -90,9 +89,7 @@ export function UsersPanel({ refreshKey }: Props) {
           <Users size={40} strokeWidth={1.5} className="panel-empty-icon" />
           <p className="panel-empty-title">No users found</p>
           <p className="panel-empty-subtitle">
-            {searchQuery
-              ? "Try a different search term."
-              : "There are no other users on the platform yet."}
+            {searchQuery ? 'Try a different search term.' : 'There are no other users on the platform yet.'}
           </p>
         </div>
       ) : (
@@ -102,7 +99,7 @@ export function UsersPanel({ refreshKey }: Props) {
               <div className="user-card-top">
                 <Avatar.Root className="user-card-avatar">
                   <Avatar.Fallback className="user-card-avatar-fallback">
-                    {user.name?.charAt(0)?.toUpperCase() || "?"}
+                    {user.name?.charAt(0)?.toUpperCase() || '?'}
                   </Avatar.Fallback>
                 </Avatar.Root>
                 <div className="user-card-info">
@@ -124,22 +121,19 @@ export function UsersPanel({ refreshKey }: Props) {
               </div>
 
               {user.is_friend ? (
-                <button className="user-card-action user-card-action--message">
+                <button
+                  className="user-card-action user-card-action--message"
+                  onClick={() => onMessageUser(user.uid)}
+                >
                   <MessageCircle size={14} />
                   Message
                 </button>
               ) : user.request_sent ? (
-                <button
-                  className="user-card-action user-card-action--disabled"
-                  disabled
-                >
+                <button className="user-card-action user-card-action--disabled" disabled>
                   Pending
                 </button>
               ) : user.request_received ? (
-                <button
-                  className="user-card-action user-card-action--disabled"
-                  disabled
-                >
+                <button className="user-card-action user-card-action--disabled" disabled>
                   Check Requests
                 </button>
               ) : (
