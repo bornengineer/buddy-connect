@@ -65,7 +65,10 @@ export function DashboardPage() {
       >
         <div className="sidebar-top-row">
           {sidebarOpen && (
-            <span className="sidebar-brand-text">BUDDYCONNECT</span>
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Logo" className="h-6 w-6" />
+              <span className="sidebar-brand-text">BUDDYCONNECT</span>
+            </div>
           )}
           <button
             className="sidebar-toggle-btn"

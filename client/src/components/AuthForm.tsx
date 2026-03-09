@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { MessageCircle } from 'lucide-react';
-import { http } from '../api/http';
-import { useAuth } from '../hooks/useAuth';
-import type { AuthResponse } from '../types/api';
+import { useState } from "react";
+import { MessageCircle } from "lucide-react";
+import { http } from "../api/http";
+import { useAuth } from "../hooks/useAuth";
+import type { AuthResponse } from "../types/api";
 
-type Mode = 'login' | 'register';
+type Mode = "login" | "register";
 
 export function AuthForm() {
   const { login } = useAuth();
-  const [mode, setMode] = useState<Mode>('login');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [mode, setMode] = useState<Mode>("login");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,12 +21,13 @@ export function AuthForm() {
     setError(null);
 
     try {
-      const path = mode === 'login' ? '/auth/login' : '/auth/register';
-      const payload = mode === 'login' ? { email, password } : { name, email, password };
+      const path = mode === "login" ? "/auth/login" : "/auth/register";
+      const payload =
+        mode === "login" ? { email, password } : { name, email, password };
       const response = await http.post<AuthResponse>(path, payload);
       login(response.data);
     } catch (err) {
-      setError('Authentication failed. Verify credentials and try again.');
+      setError("Authentication failed. Verify credentials and try again.");
     } finally {
       setLoading(false);
     }
@@ -34,14 +35,21 @@ export function AuthForm() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#f8f9fb] p-4 text-slate-900 font-sans">
-      <div className="w-full max-w-[400px]">
+      <div className="w-full min-w-[440px]">
         {/* Branding */}
         <div className="mb-8 flex flex-col items-center text-center">
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#5E54D4] shadow-sm">
             <MessageCircle size={28} className="text-white" strokeWidth={2} />
           </div>
-          <h1 className="mb-2 text-[28px] font-bold tracking-tight text-[#0f172a]">BuddyConnect</h1>
-          <p className="text-[15px] text-[#64748b]">Chat with your friends, securely.</p>
+          <h1 className="mb-2 text-[28px] font-bold tracking-tight text-[#0f172a]">
+            BuddyConnect
+          </h1>
+          <p className="text-[15px] text-[#64748b]">
+            Chat with your friends, securely.
+          </p>
+          <p className="text-[13px] font-medium text-[#94a3b8] mt-1">
+            Powered by CometChat
+          </p>
         </div>
 
         {/* Card */}
@@ -51,10 +59,12 @@ export function AuthForm() {
             <button
               type="button"
               className={`flex-1 rounded-lg py-2 text-[14px] font-semibold transition-all ${
-                mode === 'login' ? 'bg-white text-[#0f172a] shadow-sm' : 'text-[#64748b] hover:text-[#0f172a]'
+                mode === "login"
+                  ? "bg-white text-[#0f172a] shadow-sm"
+                  : "text-[#64748b] hover:text-[#0f172a]"
               }`}
               onClick={() => {
-                setMode('login');
+                setMode("login");
                 setError(null);
               }}
             >
@@ -63,10 +73,12 @@ export function AuthForm() {
             <button
               type="button"
               className={`flex-1 rounded-lg py-2 text-[14px] font-semibold transition-all ${
-                mode === 'register' ? 'bg-white text-[#0f172a] shadow-sm' : 'text-[#64748b] hover:text-[#0f172a]'
+                mode === "register"
+                  ? "bg-white text-[#0f172a] shadow-sm"
+                  : "text-[#64748b] hover:text-[#0f172a]"
               }`}
               onClick={() => {
-                setMode('register');
+                setMode("register");
                 setError(null);
               }}
             >
@@ -76,9 +88,11 @@ export function AuthForm() {
 
           {/* Form */}
           <form onSubmit={submit} className="space-y-4">
-            {mode === 'register' && (
+            {mode === "register" && (
               <div>
-                <label className="mb-1.5 block text-[13px] font-semibold text-[#334155]">Full Name</label>
+                <label className="mb-1.5 block text-[13px] font-semibold text-[#334155]">
+                  Full Name
+                </label>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -89,7 +103,9 @@ export function AuthForm() {
               </div>
             )}
             <div>
-              <label className="mb-1.5 block text-[13px] font-semibold text-[#334155]">Email</label>
+              <label className="mb-1.5 block text-[13px] font-semibold text-[#334155]">
+                Email
+              </label>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -100,7 +116,9 @@ export function AuthForm() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-semibold text-[#334155]">Password</label>
+              <label className="mb-1.5 block text-[13px] font-semibold text-[#334155]">
+                Password
+              </label>
               <input
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -111,14 +129,20 @@ export function AuthForm() {
               />
             </div>
 
-            {error && <p className="text-[13px] font-medium text-red-500">{error}</p>}
+            {error && (
+              <p className="text-[13px] font-medium text-red-500">{error}</p>
+            )}
 
             <button
               type="submit"
               className="mt-6 w-full rounded-[10px] bg-[#5E54D4] py-3 text-[15px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? 'Please wait...' : mode === 'login' ? 'Sign In' : 'Sign Up'}
+              {loading
+                ? "Please wait..."
+                : mode === "login"
+                  ? "Sign In"
+                  : "Sign Up"}
             </button>
           </form>
         </div>
