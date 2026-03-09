@@ -11,6 +11,8 @@
   "dependencies": {
     "@cometchat/chat-sdk-javascript": "^4.1.8",
     "@cometchat/chat-uikit-react": "6.3.11",
+    "@radix-ui/react-avatar": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.15",
     "axios": "^1.8.4",
     "clsx": "^2.1.1",
     "lucide-react": "^0.488.0",

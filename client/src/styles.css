@@ -2,24 +2,157 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
 :root {
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   color: #0f172a;
-  background: radial-gradient(
-    circle at top left,
-    #bae6fd 0%,
-    #f8fafc 55%,
-    #d1fae5 100%
-  );
+  --brand-purple: #6c3ce9;
+  --brand-purple-light: #ede9fe;
+  --brand-purple-hover: #7c4dff;
+  --sidebar-width: 220px;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  background: #f8f9fb;
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* ──────────────────────────────────────────────────
+   Dashboard Layout (Sidebar + Main)
+   ────────────────────────────────────────────────── */
+
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+}
+
+.dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-right: 1px solid #e5e7f0;
+  padding: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar-brand {
+  padding: 20px 18px 12px;
+}
+
+.sidebar-brand-text {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--brand-purple);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 10px;
+  flex: 1 1 0%;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.sidebar-nav-item:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.sidebar-nav-item--active {
+  background: var(--brand-purple-light);
+  color: var(--brand-purple);
+  font-weight: 600;
+}
+
+.sidebar-nav-item--active:hover {
+  background: var(--brand-purple-light);
+  color: var(--brand-purple);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid #e5e7f0;
+  margin-top: auto;
+}
+
+.sidebar-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--brand-purple);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.sidebar-user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+  flex: 1 1 0%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.sidebar-logout-btn:hover {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.dashboard-main {
+  background: #f8f9fb;
+  padding: 20px 24px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* ──────────────────────────────────────────────────
@@ -29,17 +162,17 @@ body {
 .conversations-panel-grid {
   display: grid;
   grid-template-columns: 1fr;
-  height: 72vh;
+  height: calc(100vh - 56px);
   min-height: 0;
   overflow: hidden;
-  border-radius: 0.75rem;
-  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  border: 1px solid #e5e7f0;
   background: #fff;
 }
 
 @media (min-width: 1024px) {
   .conversations-panel-grid {
-    grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-columns: 340px minmax(0, 1fr);
   }
 }
 
@@ -47,15 +180,47 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid #e5e7f0;
   overflow: hidden;
+}
+
+.conversations-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 12px;
+}
+
+.conversations-header-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.new-chat-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.new-chat-btn:hover {
+  background: var(--brand-purple-light);
+  color: var(--brand-purple);
 }
 
 .conversations-list-wrapper {
   flex: 1 1 0%;
   min-height: 0;
   overflow: hidden;
-  padding: 0 0.75rem 0.75rem;
 }
 
 .conversations-chat-section {
@@ -63,6 +228,7 @@ body {
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
+  background: #fafbfc;
 }
 
 .conversations-message-list-wrapper {
@@ -74,13 +240,117 @@ body {
   flex-direction: column;
 }
 
+/* ── Empty state ── */
+
+.conversations-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 8px;
+  color: #94a3b8;
+}
+
+.conversations-empty-icon {
+  color: #cbd5e1;
+  margin-bottom: 4px;
+}
+
+.conversations-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #475569;
+  margin: 0;
+}
+
+.conversations-empty-subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.conversations-error-bar {
+  border-top: 1px solid #e5e7f0;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #e11d48;
+  background: #fff1f2;
+}
+
+/* ──────────────────────────────────────────────────
+   CometChat Error / Loading / Retry
+   ────────────────────────────────────────────────── */
+
+.cometchat-error-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.cometchat-error-icon {
+  color: #e11d48;
+}
+
+.cometchat-error-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #64748b;
+  margin: 0;
+}
+
+.cometchat-retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid #e5e7f0;
+  background: #fff;
+  color: var(--brand-purple);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cometchat-retry-btn:hover {
+  background: var(--brand-purple-light);
+  border-color: var(--brand-purple);
+}
+
+.cometchat-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.cometchat-loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e5e7f0;
+  border-top-color: var(--brand-purple);
+  border-radius: 50%;
+  animation: spinner 0.7s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* ──────────────────────────────────────────────────
    CometChat message-list overrides
-   The component sets flex-shrink: 0 internally which
-   prevents it from fitting inside a height-constrained
-   flex parent.  We also need to guarantee that the
-   wrapper-div the React component injects has the
-   same constraints.
    ────────────────────────────────────────────────── */
 
 .conversations-message-list-wrapper .cometchat-message-list {
@@ -95,8 +365,6 @@ body {
   min-height: 0 !important;
 }
 
-/* The React component wraps itself in a generic div — make
-   sure that div participates in the flex layout correctly. */
 .conversations-message-list-wrapper > div {
   display: flex;
   flex-direction: column;
@@ -105,7 +373,6 @@ body {
   flex: 1 1 0%;
 }
 
-/* Also fix the conversations sidebar CometChat list */
 .conversations-list-wrapper .cometchat {
   height: 100% !important;
   min-height: 0 !important;
@@ -116,4 +383,155 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+/* ──────────────────────────────────────────────────
+   Radix Dialog (New Chat)
+   ────────────────────────────────────────────────── */
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 50;
+  animation: fadeIn 0.15s ease;
+}
+
+.dialog-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 51;
+  width: 90%;
+  max-width: 420px;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: dialogIn 0.2s ease;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #e5e7f0;
+}
+
+.dialog-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.dialog-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.dialog-close-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.dialog-body {
+  padding: 12px 16px 16px;
+  overflow-y: auto;
+  flex: 1 1 0%;
+}
+
+.dialog-empty {
+  text-align: center;
+  padding: 24px 0;
+  font-size: 14px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.dialog-friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dialog-friend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: left;
+}
+
+.dialog-friend-item:hover {
+  background: #f1f5f9;
+}
+
+.friend-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.friend-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-purple-light);
+  color: var(--brand-purple);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.friend-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }

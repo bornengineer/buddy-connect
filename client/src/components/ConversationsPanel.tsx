@@ -6,6 +6,9 @@ import {
   CometChatMessageHeader,
   CometChatMessageList,
 } from "@cometchat/chat-uikit-react";
+import * as Dialog from "@radix-ui/react-dialog";
+import * as Avatar from "@radix-ui/react-avatar";
+import { UserPlus, X, MessageCircle, RefreshCw } from "lucide-react";
 import { http } from "../api/http";
 import { useCometChat } from "../hooks/useCometChat";
 
@@ -13,11 +16,23 @@ type MessageTarget = {
   user: CometChat.User;
 };
 
+type Friend = {
+  id: number;
+  uid: string;
+  name: string;
+  email: string;
+};
+
 export function ConversationsPanel() {
-  const { ready, error } = useCometChat();
+  const { ready, error, retry } = useCometChat();
   const [target, setTarget] = useState<MessageTarget | null>(null);
   const [panelError, setPanelError] = useState<string | null>(null);
   const [friendUidSet, setFriendUidSet] = useState<Set<string>>(new Set());
+
+  // New Chat dialog state
+  const [newChatOpen, setNewChatOpen] = useState(false);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [friendsLoading, setFriendsLoading] = useState(false);
 
   const conversationsRequestBuilder = useMemo(
     () =>
@@ -41,12 +56,50 @@ export function ConversationsPanel() {
     void loadFriendUids();
   }, []);
 
+  const fetchFriends = async () => {
+    setFriendsLoading(true);
+    try {
+      const response = await http.get<Friend[]>("/users/friends");
+      setFriends(response.data);
+    } catch {
+      setFriends([]);
+    } finally {
+      setFriendsLoading(false);
+    }
+  };
+
+  const startChatWithFriend = async (uid: string) => {
+    try {
+      const user = await CometChat.getUser(uid);
+      setTarget({ user });
+      setNewChatOpen(false);
+      setPanelError(null);
+    } catch {
+      setPanelError("Could not start chat with this user.");
+    }
+  };
+
+  // ─── Error / Retry ───
   if (error) {
-    return <p className="text-sm text-rose-600">{error}</p>;
+    return (
+      <div className="cometchat-error-card">
+        <RefreshCw size={32} className="cometchat-error-icon" />
+        <p className="cometchat-error-text">{error}</p>
+        <button className="cometchat-retry-btn" onClick={retry}>
+          <RefreshCw size={14} />
+          Retry
+        </button>
+      </div>
+    );
   }
 
   if (!ready) {
-    return <p className="text-sm text-slate-500">Connecting to CometChat...</p>;
+    return (
+      <div className="cometchat-loading">
+        <div className="cometchat-loading-spinner" />
+        <p>Connecting to CometChat...</p>
+      </div>
+    );
   }
 
   const onConversationClick = (conversation: CometChat.Conversation) => {
@@ -70,11 +123,67 @@ export function ConversationsPanel() {
   return (
     <div className="conversations-panel-grid">
       <aside className="conversations-sidebar">
-        <div className="px-3 pb-2 pt-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Active Conversations
-          </h3>
+        {/* Header: "Chats" + New Chat button */}
+        <div className="conversations-header">
+          <h3 className="conversations-header-title">Chats</h3>
+          <Dialog.Root
+            open={newChatOpen}
+            onOpenChange={(open) => {
+              setNewChatOpen(open);
+              if (open) fetchFriends();
+            }}
+          >
+            <Dialog.Trigger asChild>
+              <button className="new-chat-btn" title="New Chat">
+                <UserPlus size={18} />
+              </button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="dialog-overlay" />
+              <Dialog.Content className="dialog-content">
+                <div className="dialog-header">
+                  <Dialog.Title className="dialog-title">
+                    Start a new chat
+                  </Dialog.Title>
+                  <Dialog.Close asChild>
+                    <button className="dialog-close-btn">
+                      <X size={18} />
+                    </button>
+                  </Dialog.Close>
+                </div>
+
+                <div className="dialog-body">
+                  {friendsLoading ? (
+                    <p className="dialog-empty">Loading friends...</p>
+                  ) : friends.length === 0 ? (
+                    <p className="dialog-empty">
+                      No friends yet. Add friends first!
+                    </p>
+                  ) : (
+                    <div className="dialog-friends-list">
+                      {friends.map((f) => (
+                        <button
+                          key={f.id}
+                          className="dialog-friend-item"
+                          onClick={() => startChatWithFriend(f.uid)}
+                        >
+                          <Avatar.Root className="friend-avatar">
+                            <Avatar.Fallback className="friend-avatar-fallback">
+                              {f.name?.charAt(0)?.toUpperCase() || "?"}
+                            </Avatar.Fallback>
+                          </Avatar.Root>
+                          <span className="friend-name">{f.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
         </div>
+
+        {/* Conversations list */}
         <div className="conversations-list-wrapper">
           <CometChatConversations
             conversationsRequestBuilder={conversationsRequestBuilder}
@@ -95,15 +204,21 @@ export function ConversationsPanel() {
             <CometChatMessageComposer user={target.user} />
           </>
         ) : (
-          <div className="grid h-full place-items-center p-6 text-sm text-slate-500">
-            Select an active conversation to start messaging.
+          <div className="conversations-empty-state">
+            <MessageCircle
+              size={48}
+              strokeWidth={1.5}
+              className="conversations-empty-icon"
+            />
+            <p className="conversations-empty-title">Select a conversation</p>
+            <p className="conversations-empty-subtitle">
+              Choose a friend to start chatting
+            </p>
           </div>
         )}
 
         {panelError && (
-          <div className="border-t border-slate-200 px-4 py-2 text-sm text-rose-600">
-            {panelError}
-          </div>
+          <div className="conversations-error-bar">{panelError}</div>
         )}
       </section>
     </div>
