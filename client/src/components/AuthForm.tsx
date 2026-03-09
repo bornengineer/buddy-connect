@@ -34,7 +34,7 @@ export function AuthForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8f9fb] p-4 text-slate-900 font-sans">
+    <div className="flex h-screen overflow-hidden items-center justify-center bg-[#f8f9fb] p-4 text-slate-900 font-sans">
       <div className="w-full min-w-[440px]">
         {/* Branding */}
         <div className="mb-8 flex flex-col items-center text-center">
