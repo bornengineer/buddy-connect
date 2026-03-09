@@ -1,4 +1,4 @@
-import { pool } from './pool.js';
+import { pool } from "./pool.js";
 
 const statements = [
   `CREATE TABLE IF NOT EXISTS users (
@@ -35,19 +35,19 @@ const statements = [
   `DROP TRIGGER IF EXISTS trigger_friend_requests_updated_at ON friend_requests;`,
   `CREATE TRIGGER trigger_friend_requests_updated_at
       BEFORE UPDATE ON friend_requests
-      FOR EACH ROW EXECUTE FUNCTION set_updated_at();`
+      FOR EACH ROW EXECUTE FUNCTION set_updated_at();`,
 ];
 
 async function migrate() {
   for (const statement of statements) {
     await pool.query(statement);
   }
-  console.log('Database migration complete');
+  console.log("Database migration complete");
   await pool.end();
 }
 
 migrate().catch(async (error) => {
-  console.error('Migration failed', error);
+  console.error("Migration failed", error);
   await pool.end();
   process.exit(1);
 });

@@ -1,6 +1,6 @@
-import type { AuthResponse } from '../types/api';
+import type { AuthResponse } from "../types/api";
 
-const AUTH_STORAGE_KEY = 'comet-social-auth';
+const AUTH_STORAGE_KEY = "comet-social-auth";
 
 export function saveAuth(data: AuthResponse) {
   localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data));

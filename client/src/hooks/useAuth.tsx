@@ -1,8 +1,8 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import type { PropsWithChildren } from 'react';
-import type { AuthResponse } from '../types/api';
-import { clearAuth, loadAuth, saveAuth } from '../lib/auth-storage';
-import { setAuthToken } from '../api/http';
+import { createContext, useContext, useMemo, useState } from "react";
+import type { PropsWithChildren } from "react";
+import type { AuthResponse } from "../types/api";
+import { clearAuth, loadAuth, saveAuth } from "../lib/auth-storage";
+import { setAuthToken } from "../api/http";
 
 type AuthContextType = {
   auth: AuthResponse | null;
@@ -31,9 +31,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setAuth(null);
         clearAuth();
         setAuthToken(null);
-      }
+      },
     }),
-    [auth]
+    [auth],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used inside AuthProvider');
+    throw new Error("useAuth must be used inside AuthProvider");
   }
   return context;
 }

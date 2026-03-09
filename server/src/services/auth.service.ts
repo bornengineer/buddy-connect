@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
-import { env } from '../config/env.js';
+import jwt from "jsonwebtoken";
+import { env } from "../config/env.js";
 
 export type JwtPayload = {
   userId: number;
@@ -7,7 +7,7 @@ export type JwtPayload = {
 };
 
 export function signToken(payload: JwtPayload): string {
-  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: "7d" });
 }
 
 export function verifyToken(token: string): JwtPayload {
