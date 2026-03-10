@@ -25,7 +25,7 @@ export function DashboardPage() {
     isNewUser ? "users" : "conversations",
   );
   const [refreshKey, setRefreshKey] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   const [messageTargetUid, setMessageTargetUid] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
 
