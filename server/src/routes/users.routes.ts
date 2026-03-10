@@ -1,12 +1,15 @@
 import express from "express";
 import { pool } from "../db/pool.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
 
 export const usersRouter = express.Router();
 
-usersRouter.get("/", async (req, res) => {
-  const currentUserId = req.auth!.userId;
-  const result = await pool.query(
-    `SELECT
+usersRouter.get(
+  "/",
+  asyncHandler(async (req: express.Request, res: express.Response) => {
+    const currentUserId = req.auth!.userId;
+    const result = await pool.query(
+      `SELECT
       u.id,
       u.uid,
       u.name,
@@ -25,22 +28,26 @@ usersRouter.get("/", async (req, res) => {
     FROM users u
     WHERE u.id <> $1
     ORDER BY u.created_at DESC`,
-    [currentUserId],
-  );
+      [currentUserId],
+    );
 
-  return res.json(result.rows);
-});
+    return res.json(result.rows);
+  }),
+);
 
-usersRouter.get("/friends", async (req, res) => {
-  const currentUserId = req.auth!.userId;
-  const result = await pool.query(
-    `SELECT u.id, u.uid, u.name, u.email
+usersRouter.get(
+  "/friends",
+  asyncHandler(async (req: express.Request, res: express.Response) => {
+    const currentUserId = req.auth!.userId;
+    const result = await pool.query(
+      `SELECT u.id, u.uid, u.name, u.email
      FROM friendships f
      JOIN users u ON u.id = f.friend_id
      WHERE f.user_id = $1
      ORDER BY u.name ASC`,
-    [currentUserId],
-  );
+      [currentUserId],
+    );
 
-  return res.json(result.rows);
-});
+    return res.json(result.rows);
+  }),
+);

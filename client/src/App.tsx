@@ -16,6 +16,7 @@ function AppRoutes() {
         path="/"
         element={auth ? <DashboardPage /> : <Navigate to="/auth" replace />}
       />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
