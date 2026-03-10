@@ -2,10 +2,7 @@ import express from "express";
 import { z } from "zod";
 import { pool } from "../db/pool.js";
 import { addFriendsBidirectional } from "../services/cometchat.service.js";
-import {
-  pushToUser,
-  registerSseClient,
-} from "../services/realtime.service.js";
+import { pushToUser, registerSseClient } from "../services/realtime.service.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 
 export const friendRequestRouter = express.Router();
@@ -41,9 +38,7 @@ friendRequestRouter.post(
     const { receiverId } = parse.data;
 
     if (senderId === receiverId) {
-      return res
-        .status(400)
-        .json({ error: "Cannot send request to yourself" });
+      return res.status(400).json({ error: "Cannot send request to yourself" });
     }
 
     const receiver = await pool.query("SELECT id FROM users WHERE id = $1", [
