@@ -13,6 +13,7 @@ import { FriendRequestsPanel } from "../components/FriendRequestsPanel";
 import { UsersPanel } from "../components/UsersPanel";
 import { ConversationsPanel } from "../components/ConversationsPanel";
 import { useAuth } from "../hooks/useAuth";
+import { http } from "../api/http";
 
 type Tab = "users" | "friend-requests" | "conversations";
 
@@ -43,6 +44,17 @@ export function DashboardPage() {
       return null;
     }
   }, []);
+
+  // Fetch initial pending friend request count on login
+  useEffect(() => {
+    if (activeTab === "friend-requests") return; // already viewing them
+    http
+      .get<Array<unknown>>("/friend-requests/incoming")
+      .then((res) => {
+        if (res.data.length > 0) setUnreadRequests(res.data.length);
+      })
+      .catch(() => {});
+  }, []); // runs once on mount
 
   useEffect(() => {
     if (!token) return;

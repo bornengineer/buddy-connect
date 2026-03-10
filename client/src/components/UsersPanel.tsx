@@ -26,7 +26,11 @@ function SkeletonCard() {
   );
 }
 
-export function UsersPanel({ refreshKey, onMessageUser, onGoToRequests }: Props) {
+export function UsersPanel({
+  refreshKey,
+  onMessageUser,
+  onGoToRequests,
+}: Props) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
