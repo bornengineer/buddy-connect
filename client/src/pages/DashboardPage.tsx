@@ -22,8 +22,10 @@ const NAV_ITEMS: { key: Tab; label: string; icon: typeof Users }[] = [
 ];
 
 export function DashboardPage() {
-  const { auth, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<Tab>("conversations");
+  const { auth, logout, isNewUser } = useAuth();
+  const [activeTab, setActiveTab] = useState<Tab>(
+    isNewUser ? "users" : "conversations",
+  );
   const [refreshKey, setRefreshKey] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [messageTargetUid, setMessageTargetUid] = useState<string | null>(null);

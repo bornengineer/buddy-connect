@@ -618,6 +618,49 @@ body {
 }
 
 /* ──────────────────────────────────────────────────
+   Panel Error Banner
+   ────────────────────────────────────────────────── */
+
+.panel-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  margin-bottom: 16px;
+}
+
+.panel-error-banner p {
+  font-size: 13px;
+  font-weight: 500;
+  color: #dc2626;
+  margin: 0;
+}
+
+.panel-error-banner button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.panel-error-banner button:hover {
+  background: #fee2e2;
+}
+
+/* ──────────────────────────────────────────────────
    Panel Pages (Discover Users / Friend Requests)
    ────────────────────────────────────────────────── */
 

@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { MessageCircle } from "lucide-react";
+import { AxiosError } from "axios";
 import { http } from "../api/http";
 import { useAuth } from "../hooks/useAuth";
 import type { AuthResponse } from "../types/api";
 
 type Mode = "login" | "register";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function AuthForm() {
   const { login } = useAuth();
@@ -13,25 +16,64 @@ export function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+
+  const validate = (): boolean => {
+    const errs: Record<string, string> = {};
+
+    if (mode === "register") {
+      const trimmed = name.trim();
+      if (trimmed.length < 2) {
+        errs.name = "Name must be at least 2 characters.";
+      } else if (EMAIL_RE.test(trimmed)) {
+        errs.name = "Please enter a valid name, not an email address.";
+      }
+    }
+
+    if (!EMAIL_RE.test(email.trim())) {
+      errs.email = "Please enter a valid email address.";
+    }
+
+    if (password.length < 6) {
+      errs.password = "Password must be at least 6 characters.";
+    }
+
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setLoading(true);
     setError(null);
+
+    if (!validate()) return;
+
+    setLoading(true);
 
     try {
       const path = mode === "login" ? "/auth/login" : "/auth/register";
       const payload =
         mode === "login" ? { email, password } : { name, email, password };
       const response = await http.post<AuthResponse>(path, payload);
-      login(response.data);
+      login(response.data, mode === "register");
     } catch (err) {
-      setError("Authentication failed. Verify credentials and try again.");
+      if (err instanceof AxiosError && err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  const inputClass = (field: string) =>
+    `w-full rounded-[10px] border bg-white px-4 py-2.5 text-[15px] outline-none transition-colors focus:ring-1 ${
+      fieldErrors[field]
+        ? "border-red-400 focus:border-red-500 focus:ring-red-200"
+        : "border-[#e2e8f0] focus:border-[#5E54D4] focus:ring-[#5E54D4]"
+    }`;
 
   return (
     <div className="flex h-screen overflow-hidden items-center justify-center bg-[#f8f9fb] p-4 text-slate-900 font-sans">
@@ -66,6 +108,7 @@ export function AuthForm() {
               onClick={() => {
                 setMode("login");
                 setError(null);
+                setFieldErrors({});
               }}
             >
               Sign In
@@ -80,6 +123,7 @@ export function AuthForm() {
               onClick={() => {
                 setMode("register");
                 setError(null);
+                setFieldErrors({});
               }}
             >
               Sign Up
@@ -95,11 +139,20 @@ export function AuthForm() {
                 </label>
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-[10px] border border-[#e2e8f0] bg-white px-4 py-2.5 text-[15px] outline-none transition-colors focus:border-[#5E54D4] focus:ring-1 focus:ring-[#5E54D4]"
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    if (fieldErrors.name)
+                      setFieldErrors((p) => ({ ...p, name: "" }));
+                  }}
+                  className={inputClass("name")}
                   placeholder="John Doe"
                   required
                 />
+                {fieldErrors.name && (
+                  <p className="mt-1 text-[12px] text-red-500">
+                    {fieldErrors.name}
+                  </p>
+                )}
               </div>
             )}
             <div>
@@ -108,12 +161,21 @@ export function AuthForm() {
               </label>
               <input
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-[10px] border border-[#e2e8f0] bg-white px-4 py-2.5 text-[15px] outline-none transition-colors focus:border-[#5E54D4] focus:ring-1 focus:ring-[#5E54D4]"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email)
+                    setFieldErrors((p) => ({ ...p, email: "" }));
+                }}
+                className={inputClass("email")}
                 placeholder="you@example.com"
                 type="email"
                 required
               />
+              {fieldErrors.email && (
+                <p className="mt-1 text-[12px] text-red-500">
+                  {fieldErrors.email}
+                </p>
+              )}
             </div>
             <div>
               <label className="mb-1.5 block text-[13px] font-semibold text-[#334155]">
@@ -121,12 +183,21 @@ export function AuthForm() {
               </label>
               <input
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-[10px] border border-[#e2e8f0] bg-white px-4 py-2.5 text-[15px] tracking-widest outline-none transition-colors focus:border-[#5E54D4] focus:ring-1 focus:ring-[#5E54D4]"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password)
+                    setFieldErrors((p) => ({ ...p, password: "" }));
+                }}
+                className={`${inputClass("password")} tracking-widest`}
                 placeholder="••••••••"
                 type="password"
                 required
               />
+              {fieldErrors.password && (
+                <p className="mt-1 text-[12px] text-red-500">
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             {error && (

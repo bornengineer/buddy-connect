@@ -6,7 +6,8 @@ import { setAuthToken } from "../api/http";
 
 type AuthContextType = {
   auth: AuthResponse | null;
-  login: (data: AuthResponse) => void;
+  isNewUser: boolean;
+  login: (data: AuthResponse, isNew?: boolean) => void;
   logout: () => void;
 };
 
@@ -18,22 +19,26 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setAuthToken(data?.token ?? null);
     return data;
   });
+  const [isNewUser, setIsNewUser] = useState(false);
 
   const value = useMemo<AuthContextType>(
     () => ({
       auth,
-      login: (data) => {
+      isNewUser,
+      login: (data, isNew = false) => {
         setAuth(data);
+        setIsNewUser(isNew);
         saveAuth(data);
         setAuthToken(data.token);
       },
       logout: () => {
         setAuth(null);
+        setIsNewUser(false);
         clearAuth();
         setAuthToken(null);
       },
     }),
-    [auth],
+    [auth, isNewUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
