@@ -148,6 +148,46 @@ body {
   color: var(--brand-purple);
 }
 
+.sidebar-nav-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sidebar-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 99px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  animation: badgePop 0.2s ease;
+}
+
+@keyframes badgePop {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .sidebar-user {
   display: flex;
   align-items: center;
@@ -615,6 +655,49 @@ body {
     opacity: 1;
     transform: translate(-50%, -50%);
   }
+}
+
+/* ──────────────────────────────────────────────────
+   Panel Error Banner
+   ────────────────────────────────────────────────── */
+
+.panel-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  margin-bottom: 16px;
+}
+
+.panel-error-banner p {
+  font-size: 13px;
+  font-weight: 500;
+  color: #dc2626;
+  margin: 0;
+}
+
+.panel-error-banner button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.panel-error-banner button:hover {
+  background: #fee2e2;
 }
 
 /* ──────────────────────────────────────────────────

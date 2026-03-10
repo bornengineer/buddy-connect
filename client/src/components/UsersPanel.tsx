@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Users, Search, MessageCircle, UserPlus } from "lucide-react";
+import { AxiosError } from "axios";
 import * as Avatar from "@radix-ui/react-avatar";
 import { http } from "../api/http";
 import type { User } from "../types/api";
@@ -7,6 +8,7 @@ import type { User } from "../types/api";
 type Props = {
   refreshKey: number;
   onMessageUser: (uid: string) => void;
+  onGoToRequests: () => void;
 };
 
 function SkeletonCard() {
@@ -24,16 +26,23 @@ function SkeletonCard() {
   );
 }
 
-export function UsersPanel({ refreshKey, onMessageUser }: Props) {
+export function UsersPanel({ refreshKey, onMessageUser, onGoToRequests }: Props) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [sendingTo, setSendingTo] = useState<number | null>(null);
 
   const load = async () => {
     setLoading(true);
-    const response = await http.get<User[]>("/users");
-    setUsers(response.data);
-    setLoading(false);
+    try {
+      const response = await http.get<User[]>("/users");
+      setUsers(response.data);
+    } catch {
+      setActionError("Failed to load users.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -41,8 +50,20 @@ export function UsersPanel({ refreshKey, onMessageUser }: Props) {
   }, [refreshKey]);
 
   const sendRequest = async (userId: number) => {
-    await http.post("/friend-requests", { receiverId: userId });
-    await load();
+    setActionError(null);
+    setSendingTo(userId);
+    try {
+      await http.post("/friend-requests", { receiverId: userId });
+      await load();
+    } catch (err) {
+      if (err instanceof AxiosError && err.response?.data?.error) {
+        setActionError(err.response.data.error);
+      } else {
+        setActionError("Failed to send friend request. Please try again.");
+      }
+    } finally {
+      setSendingTo(null);
+    }
   };
 
   const filtered = users.filter((u) =>
@@ -63,6 +84,14 @@ export function UsersPanel({ refreshKey, onMessageUser }: Props) {
           </p>
         </div>
       </div>
+
+      {/* Error banner */}
+      {actionError && (
+        <div className="panel-error-banner">
+          <p>{actionError}</p>
+          <button onClick={() => setActionError(null)}>✕</button>
+        </div>
+      )}
 
       {/* Search bar */}
       <div className="search-bar">
@@ -141,8 +170,8 @@ export function UsersPanel({ refreshKey, onMessageUser }: Props) {
                 </button>
               ) : user.request_received ? (
                 <button
-                  className="user-card-action user-card-action--disabled"
-                  disabled
+                  className="user-card-action user-card-action--add"
+                  onClick={onGoToRequests}
                 >
                   Check Requests
                 </button>
@@ -150,9 +179,10 @@ export function UsersPanel({ refreshKey, onMessageUser }: Props) {
                 <button
                   className="user-card-action user-card-action--add"
                   onClick={() => sendRequest(user.id)}
+                  disabled={sendingTo === user.id}
                 >
                   <UserPlus size={14} />
-                  Add Friend
+                  {sendingTo === user.id ? "Sending..." : "Add Friend"}
                 </button>
               )}
             </div>

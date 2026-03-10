@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { UserPlus, MailOpen, Check, X } from "lucide-react";
+import { AxiosError } from "axios";
 import * as Avatar from "@radix-ui/react-avatar";
 import { http } from "../api/http";
 import type { IncomingFriendRequest } from "../types/api";
@@ -27,6 +28,8 @@ function SkeletonRequestCard() {
 export function FriendRequestsPanel({ onChanged }: Props) {
   const [requests, setRequests] = useState<IncomingFriendRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [respondingTo, setRespondingTo] = useState<number | null>(null);
   const retryTimer = useRef<number | null>(null);
 
   const token = useMemo(() => {
@@ -43,11 +46,16 @@ export function FriendRequestsPanel({ onChanged }: Props) {
 
   const load = async () => {
     setLoading(true);
-    const response = await http.get<IncomingFriendRequest[]>(
-      "/friend-requests/incoming",
-    );
-    setRequests(response.data);
-    setLoading(false);
+    try {
+      const response = await http.get<IncomingFriendRequest[]>(
+        "/friend-requests/incoming",
+      );
+      setRequests(response.data);
+    } catch {
+      setActionError("Failed to load friend requests.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -86,9 +94,22 @@ export function FriendRequestsPanel({ onChanged }: Props) {
   }, [token]);
 
   const respond = async (id: number, action: "accept" | "reject") => {
-    await http.patch(`/friend-requests/${id}`, { action });
-    await load();
-    onChanged();
+    setActionError(null);
+    setRespondingTo(id);
+    try {
+      await http.patch(`/friend-requests/${id}`, { action });
+      await load();
+      onChanged();
+    } catch (err) {
+      const verb = action === "accept" ? "accept" : "reject";
+      if (err instanceof AxiosError && err.response?.data?.error) {
+        setActionError(err.response.data.error);
+      } else {
+        setActionError(`Failed to ${verb} friend request. Please try again.`);
+      }
+    } finally {
+      setRespondingTo(null);
+    }
   };
 
   return (
@@ -105,6 +126,14 @@ export function FriendRequestsPanel({ onChanged }: Props) {
           </p>
         </div>
       </div>
+
+      {/* Error banner */}
+      {actionError && (
+        <div className="panel-error-banner">
+          <p>{actionError}</p>
+          <button onClick={() => setActionError(null)}>✕</button>
+        </div>
+      )}
 
       {/* Content */}
       {loading ? (
@@ -138,14 +167,16 @@ export function FriendRequestsPanel({ onChanged }: Props) {
                 <button
                   className="request-action-btn request-action-btn--accept"
                   onClick={() => respond(request.id, "accept")}
+                  disabled={respondingTo === request.id}
                   title="Accept"
                 >
                   <Check size={16} />
-                  Accept
+                  {respondingTo === request.id ? "..." : "Accept"}
                 </button>
                 <button
                   className="request-action-btn request-action-btn--reject"
                   onClick={() => respond(request.id, "reject")}
+                  disabled={respondingTo === request.id}
                   title="Reject"
                 >
                   <X size={16} />
