@@ -257,6 +257,10 @@ export function DashboardPage() {
           <UsersPanel
             refreshKey={refreshKey}
             onMessageUser={handleMessageUser}
+            onGoToRequests={() => {
+              setActiveTab("friend-requests");
+              setUnreadRequests(0);
+            }}
           />
         )}
         {activeTab === "friend-requests" && (

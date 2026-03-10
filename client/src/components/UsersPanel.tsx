@@ -8,6 +8,7 @@ import type { User } from "../types/api";
 type Props = {
   refreshKey: number;
   onMessageUser: (uid: string) => void;
+  onGoToRequests: () => void;
 };
 
 function SkeletonCard() {
@@ -25,7 +26,7 @@ function SkeletonCard() {
   );
 }
 
-export function UsersPanel({ refreshKey, onMessageUser }: Props) {
+export function UsersPanel({ refreshKey, onMessageUser, onGoToRequests }: Props) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -169,8 +170,8 @@ export function UsersPanel({ refreshKey, onMessageUser }: Props) {
                 </button>
               ) : user.request_received ? (
                 <button
-                  className="user-card-action user-card-action--disabled"
-                  disabled
+                  className="user-card-action user-card-action--add"
+                  onClick={onGoToRequests}
                 >
                   Check Requests
                 </button>
