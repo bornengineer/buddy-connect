@@ -26,6 +26,7 @@ export function DashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [messageTargetUid, setMessageTargetUid] = useState<string | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   // ─── Badge counts ───
   const [unreadRequests, setUnreadRequests] = useState(0);
@@ -129,7 +130,13 @@ export function DashboardPage() {
   };
 
   const onLogout = async () => {
-    await CometChatUIKit.logout();
+    setLoggingOut(true);
+    await new Promise((r) => setTimeout(r, 50));
+    try {
+      await CometChatUIKit.logout();
+    } catch {
+      // SDK may throw if auth token was already cleared (e.g. HMR) — safe to ignore
+    }
     logout();
   };
 
@@ -259,7 +266,7 @@ export function DashboardPage() {
             }}
           />
         )}
-        {activeTab === "conversations" && (
+        {activeTab === "conversations" && !loggingOut && (
           <ConversationsPanel
             initialChatUid={messageTargetUid}
             onChatOpened={() => setMessageTargetUid(null)}
